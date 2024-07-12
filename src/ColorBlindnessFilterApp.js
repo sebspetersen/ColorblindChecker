@@ -170,7 +170,7 @@ const ColorBlindnessFilterApp = () => {
           <button
             key={key}
             className={`block w-full text-left p-2 mb-2 rounded ${
-              (compareMode ? compareFilter : filter) === key ? 'bg-blue-500 text-white' : darkMode ? 'bg-gray-700 text-white' : 'bg-white'
+              filter === key ? 'bg-blue-500 text-white' : darkMode ? 'bg-gray-700 text-white' : 'bg-white'
             }`}
             onMouseDown={() => handleMouseDown(key)}
             onMouseUp={handleMouseUp}
