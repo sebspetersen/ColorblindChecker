@@ -150,8 +150,10 @@ const ColorBlindnessFilterApp = () => {
       {/* Sidebar */}
       <div className={`w-64 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-xl z-10`}>
         <div className="p-6">
-          <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-8">
-            Color<span className="text-indigo-600">Blind</span>Checker
+          <h1 className="text-2xl font-extrabold mb-8 whitespace-nowrap overflow-visible">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+              Color<span className="text-indigo-600">Blind</span>Checker
+            </span>
           </h1>
           
           <h2 className="text-lg font-bold mb-4">Color Vision Filters</h2>
