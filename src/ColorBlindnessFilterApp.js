@@ -49,6 +49,35 @@ const SVGFilters = () => (
   </svg>
 );
 
+const ColorBlindnessIcons = {
+  normal: (
+    <svg viewBox="0 0 24 24" width="24" height="24">
+      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M12 7v10M7 12h10" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  ),
+  deuteranopia: (
+    <svg viewBox="0 0 24 24" width="24" height="24">
+      <path d="M12 2L2 12l10 10 10-10z" fill="#00FF00" />
+    </svg>
+  ),
+  protanopia: (
+    <svg viewBox="0 0 24 24" width="24" height="24">
+      <path d="M12 2L2 12l10 10 10-10z" fill="#FF0000" />
+    </svg>
+  ),
+  tritanopia: (
+    <svg viewBox="0 0 24 24" width="24" height="24">
+      <path d="M12 2L2 12l10 10 10-10z" fill="#0000FF" />
+    </svg>
+  ),
+  achromatopsia: (
+    <svg viewBox="0 0 24 24" width="24" height="24">
+      <path d="M12 2L2 12l10 10 10-10z" fill="#808080" />
+    </svg>
+  ),
+};
+
 const colorBlindnessFilters = {
   normal: 'none',
   protanopia: 'url(#protanopia)',
@@ -163,13 +192,14 @@ const ColorBlindnessFilterApp = () => {
           {Object.keys(colorBlindnessFilters).map((key) => (
             <button
               key={key}
-              className={`block w-full text-left p-2 mb-2 rounded ${
+              className={`block w-full text-left p-2 mb-2 rounded flex items-center ${
                 filter === key ? 'bg-blue-500 text-white' : darkMode ? 'bg-gray-700 text-white' : 'bg-white'
               }`}
               onMouseDown={() => handleMouseDown(key)}
               onMouseUp={handleMouseUp}
               onClick={() => handleFilterClick(key)}
             >
+              <span className="mr-2">{ColorBlindnessIcons[key]}</span>
               {key.charAt(0).toUpperCase() + key.slice(1)}
             </button>
           ))}
