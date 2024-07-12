@@ -84,11 +84,14 @@ const ColorBlindnessFilterApp = () => {
 
   useEffect(() => {
     const favicon = document.getElementById('favicon');
-    const svg = new Blob([document.querySelector('.favicon-svg').outerHTML], {type: 'image/svg+xml'});
-    const url = URL.createObjectURL(svg);
-    favicon.href = url;
+    const svgElement = document.querySelector('.favicon-svg');
+    if (svgElement) {
+      const svg = new Blob([svgElement.outerHTML], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(svg);
+      favicon.href = url;
 
-    return () => URL.revokeObjectURL(url);
+      return () => URL.revokeObjectURL(url);
+    }
   }, [darkMode]);
 
   const handleImageUpload = (event) => {
