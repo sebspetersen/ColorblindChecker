@@ -61,7 +61,6 @@ const ColorBlindnessFilterApp = () => {
   const [image, setImage] = useState(null);
   const [filter, setFilter] = useState('normal');
   const [compareMode, setCompareMode] = useState(false);
-  const [compareFilter, setCompareFilter] = useState('normal');
   const canvasRef = useRef(null);
 
   const handleImageUpload = (event) => {
@@ -129,8 +128,18 @@ const ColorBlindnessFilterApp = () => {
 
   const toggleCompareMode = () => {
     setCompareMode(!compareMode);
-    setCompareFilter(filter);
-    setFilter('normal');
+  };
+
+  const handleMouseDown = (key) => {
+    if (compareMode) {
+      setFilter(key);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (compareMode) {
+      setFilter('normal');
+    }
   };
 
   return (
@@ -143,9 +152,10 @@ const ColorBlindnessFilterApp = () => {
           <button
             key={key}
             className={`block w-full text-left p-2 mb-2 rounded ${
-              (compareMode ? compareFilter : filter) === key ? 'bg-blue-500 text-white' : 'bg-white'
+              filter === key ? 'bg-blue-500 text-white' : 'bg-white'
             }`}
-            onClick={() => compareMode ? setCompareFilter(key) : setFilter(key)}
+            onMouseDown={() => handleMouseDown(key)}
+            onMouseUp={handleMouseUp}
           >
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </button>
@@ -176,35 +186,12 @@ const ColorBlindnessFilterApp = () => {
           onPaste={handlePaste}
         >
           {image ? (
-            compareMode ? (
-              <div className="flex flex-row space-x-4">
-                <div className="w-1/2">
-                  <h3 className="text-lg font-semibold mb-2">Normal View</h3>
-                  <img
-                    src={image}
-                    alt="Original design"
-                    className="max-w-full h-auto"
-                    style={{ filter: colorBlindnessFilters['normal'] }}
-                  />
-                </div>
-                <div className="w-1/2">
-                  <h3 className="text-lg font-semibold mb-2">{compareFilter.charAt(0).toUpperCase() + compareFilter.slice(1)} Filter</h3>
-                  <img
-                    src={image}
-                    alt="Filtered design"
-                    className="max-w-full h-auto"
-                    style={{ filter: colorBlindnessFilters[compareFilter] }}
-                  />
-                </div>
-              </div>
-            ) : (
-              <img
-                src={image}
-                alt="Uploaded design"
-                className="max-w-full max-h-full mx-auto"
-                style={{ filter: colorBlindnessFilters[filter] }}
-              />
-            )
+            <img
+              src={image}
+              alt="Uploaded design"
+              className="max-w-full max-h-full mx-auto"
+              style={{ filter: colorBlindnessFilters[filter] }}
+            />
           ) : (
             <div>
               <Upload className="mx-auto mb-4" size={48} />
