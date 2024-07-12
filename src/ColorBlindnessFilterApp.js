@@ -61,6 +61,7 @@ const ColorBlindnessFilterApp = () => {
   const [image, setImage] = useState(null);
   const [filter, setFilter] = useState('normal');
   const [compareMode, setCompareMode] = useState(false);
+  const [compareFilter, setCompareFilter] = useState('normal');
   const canvasRef = useRef(null);
 
   const handleImageUpload = (event) => {
@@ -142,6 +143,12 @@ const ColorBlindnessFilterApp = () => {
     }
   };
 
+  const handleFilterClick = (key) => {
+    if (!compareMode) {
+      setFilter(key);
+    }
+  };
+
   return (
     <div className="flex h-screen">
       <SVGFilters />
@@ -152,10 +159,11 @@ const ColorBlindnessFilterApp = () => {
           <button
             key={key}
             className={`block w-full text-left p-2 mb-2 rounded ${
-              filter === key ? 'bg-blue-500 text-white' : 'bg-white'
+              (compareMode ? compareFilter : filter) === key ? 'bg-blue-500 text-white' : 'bg-white'
             }`}
             onMouseDown={() => handleMouseDown(key)}
             onMouseUp={handleMouseUp}
+            onClick={() => handleFilterClick(key)}
           >
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </button>
