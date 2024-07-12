@@ -64,7 +64,40 @@ const ColorBlindnessFilterApp = () => {
   const [compareFilter, setCompareFilter] = useState('normal');
   const canvasRef = useRef(null);
 
-  // ... (handleImageUpload, handlePaste, and applyFilter functions remain the same)
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => setImage(e.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handlePaste = (event) => {
+    const items = event.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const blob = items[i].getAsFile();
+        const reader = new FileReader();
+        reader.onload = (e) => setImage(e.target.result);
+        reader.readAsDataURL(blob);
+      }
+    }
+  };
+
+  const applyFilter = (imageData, filterType) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.src = imageData;
+    return new Promise((resolve) => {
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.filter = colorBlindnessFilters[filterType];
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL());
+      };
+    });
+  };
 
   const downloadFilteredImages = async () => {
     if (!image) return;
@@ -105,7 +138,36 @@ const ColorBlindnessFilterApp = () => {
       <SVGFilters />
 
       <div className="w-64 bg-gray-100 p-4">
-        {/* ... (sidebar content remains the same) ... */}
+        <h2 className="text-xl font-bold mb-4">Color Blindness Filters</h2>
+        {Object.keys(colorBlindnessFilters).map((key) => (
+          <button
+            key={key}
+            className={`block w-full text-left p-2 mb-2 rounded ${
+              (compareMode ? compareFilter : filter) === key ? 'bg-blue-500 text-white' : 'bg-white'
+            }`}
+            onClick={() => compareMode ? setCompareFilter(key) : setFilter(key)}
+          >
+            {key.charAt(0).toUpperCase() + key.slice(1)}
+          </button>
+        ))}
+        {image && (
+          <>
+            <button
+              className="block w-full bg-green-500 text-white p-2 mb-2 rounded"
+              onClick={downloadFilteredImages}
+            >
+              <Download className="inline mr-2" size={16} />
+              Download All Filters
+            </button>
+            <button
+              className={`block w-full ${compareMode ? 'bg-red-500' : 'bg-blue-500'} text-white p-2 mb-2 rounded`}
+              onClick={toggleCompareMode}
+            >
+              <Split className="inline mr-2" size={16} />
+              {compareMode ? 'Exit Compare' : 'Compare Filters'}
+            </button>
+          </>
+        )}
       </div>
 
       <div className="flex-1 p-4">
