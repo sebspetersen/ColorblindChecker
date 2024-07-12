@@ -17,11 +17,23 @@ jobs:
         with:
           node-version: '16'
 
+      - name: Debug - List files
+        run: ls -la
+
+      - name: Debug - Show package.json content
+        run: cat package.json
+
       - name: Install dependencies
         run: npm ci
+        
+      - name: Debug - List installed packages
+        run: npm list --depth=0
 
       - name: Build
         run: npm run build
+
+      - name: Debug - List build output
+        run: ls -la build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
