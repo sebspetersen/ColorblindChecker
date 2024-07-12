@@ -157,28 +157,23 @@ const ColorBlindnessFilterApp = () => {
     <div className={`flex h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
       <SVGFilters />
 
-      <div className={`w-64 p-4 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
-        <h2 className="text-xl font-bold mb-4">Color Blindness Filters</h2>
-        <button
-          className="block w-full bg-yellow-500 text-white p-2 mb-2 rounded"
-          onClick={toggleDarkMode}
-        >
-          {darkMode ? <Sun className="inline mr-2" size={16} /> : <Moon className="inline mr-2" size={16} />}
-          {darkMode ? 'Light Mode' : 'Dark Mode'}
-        </button>
-        {Object.keys(colorBlindnessFilters).map((key) => (
-          <button
-            key={key}
-            className={`block w-full text-left p-2 mb-2 rounded ${
-              filter === key ? 'bg-blue-500 text-white' : darkMode ? 'bg-gray-700 text-white' : 'bg-white'
-            }`}
-            onMouseDown={() => handleMouseDown(key)}
-            onMouseUp={handleMouseUp}
-            onClick={() => handleFilterClick(key)}
-          >
-            {key.charAt(0).toUpperCase() + key.slice(1)}
-          </button>
-        ))}
+      <div className={`w-64 p-4 flex flex-col justify-between ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+        <div>
+          <h2 className="text-xl font-bold mb-4">Color Blindness Filters</h2>
+          {Object.keys(colorBlindnessFilters).map((key) => (
+            <button
+              key={key}
+              className={`block w-full text-left p-2 mb-2 rounded ${
+                filter === key ? 'bg-blue-500 text-white' : darkMode ? 'bg-gray-700 text-white' : 'bg-white'
+              }`}
+              onMouseDown={() => handleMouseDown(key)}
+              onMouseUp={handleMouseUp}
+              onClick={() => handleFilterClick(key)}
+            >
+              {key.charAt(0).toUpperCase() + key.slice(1)}
+            </button>
+          ))}
+        </div>
         {image && (
           <>
             <button
@@ -197,6 +192,13 @@ const ColorBlindnessFilterApp = () => {
             </button>
           </>
         )}
+        <button
+          className="mt-auto bg-yellow-500 text-white p-2 rounded"
+          onClick={toggleDarkMode}
+        >
+          {darkMode ? <Sun className="inline mr-2" size={16} /> : <Moon className="inline mr-2" size={16} />}
+          {darkMode ? 'Light Mode' : 'Dark Mode'}
+        </button>
       </div>
 
       <div className="flex-1 p-4">
