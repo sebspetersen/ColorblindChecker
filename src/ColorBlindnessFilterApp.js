@@ -50,32 +50,11 @@ const SVGFilters = () => (
 );
 
 const ColorBlindnessIcons = {
-  normal: (
-    <svg viewBox="0 0 24 24" width="24" height="24">
-      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 7v10M7 12h10" stroke="currentColor" strokeWidth="2" />
-    </svg>
-  ),
-  deuteranopia: (
-    <svg viewBox="0 0 24 24" width="24" height="24">
-      <path d="M12 2L2 12l10 10 10-10z" fill="#00FF00" />
-    </svg>
-  ),
-  protanopia: (
-    <svg viewBox="0 0 24 24" width="24" height="24">
-      <path d="M12 2L2 12l10 10 10-10z" fill="#FF0000" />
-    </svg>
-  ),
-  tritanopia: (
-    <svg viewBox="0 0 24 24" width="24" height="24">
-      <path d="M12 2L2 12l10 10 10-10z" fill="#0000FF" />
-    </svg>
-  ),
-  achromatopsia: (
-    <svg viewBox="0 0 24 24" width="24" height="24">
-      <path d="M12 2L2 12l10 10 10-10z" fill="#808080" />
-    </svg>
-  ),
+  normal: <span className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">👁️</span>,
+  protanopia: <span className="w-8 h-8 rounded-full bg-red-400 flex items-center justify-center">🔴</span>,
+  deuteranopia: <span className="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center">🟢</span>,
+  tritanopia: <span className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center">🔵</span>,
+  achromatopsia: <span className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center">⚪</span>,
 };
 
 const colorBlindnessFilters = {
@@ -145,8 +124,8 @@ const ColorBlindnessFilterApp = () => {
       }
       const filteredImage = await applyFilter(image, filters[i]);
       
-      const imgWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margin on each side
-      const imgHeight = (imgWidth * 9) / 16; // Assuming 16:9 aspect ratio, adjust if needed
+      const imgWidth = pdf.internal.pageSize.getWidth() - 20;
+      const imgHeight = (imgWidth * 9) / 16;
 
       pdf.setFontSize(16);
       pdf.text(`${filters[i].charAt(0).toUpperCase() + filters[i].slice(1)} Filter`, 10, 10);
@@ -160,106 +139,111 @@ const ColorBlindnessFilterApp = () => {
     setCompareMode(!compareMode);
   };
 
-  const handleMouseDown = (key) => {
-    if (compareMode) {
-      setFilter(key);
-    }
-  };
-
-  const handleMouseUp = () => {
-    if (compareMode) {
-      setFilter('normal');
-    }
-  };
-
-  const handleFilterClick = (key) => {
-    if (!compareMode) {
-      setFilter(key);
-    }
-  };
-
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
   return (
-    <div className={`flex h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+    <div className={`min-h-screen flex ${darkMode ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 text-gray-800'}`}>
       <SVGFilters />
 
-      <div className={`w-64 p-4 flex flex-col justify-between ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
-        <div>
-          <h2 className="text-xl font-bold mb-4">Color Blindness Filters</h2>
-          {Object.keys(colorBlindnessFilters).map((key) => (
-            <button
-              key={key}
-              className={`block w-full text-left p-2 mb-2 rounded flex items-center ${
-                filter === key ? 'bg-blue-500 text-white' : darkMode ? 'bg-gray-700 text-white' : 'bg-white'
-              }`}
-              onMouseDown={() => handleMouseDown(key)}
-              onMouseUp={handleMouseUp}
-              onClick={() => handleFilterClick(key)}
-            >
-              <span className="mr-2">{ColorBlindnessIcons[key]}</span>
-              {key.charAt(0).toUpperCase() + key.slice(1)}
-            </button>
-          ))}
+      {/* Sidebar */}
+      <div className={`w-64 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-xl z-10`}>
+        <div className="p-6">
+          <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-8">
+            Vision<span className="text-indigo-600">Sim</span>
+          </h1>
+          
+          <h2 className="text-lg font-bold mb-4">Color Vision Filters</h2>
+          <div className="space-y-3">
+            {Object.keys(colorBlindnessFilters).map((key) => (
+              <button
+                key={key}
+                className={`w-full text-left p-3 rounded-xl flex items-center transition-all duration-300 ${
+                  filter === key 
+                    ? 'bg-indigo-100 text-indigo-700' 
+                    : darkMode 
+                      ? 'hover:bg-gray-700' 
+                      : 'hover:bg-indigo-50'
+                } focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                onMouseDown={() => compareMode && setFilter(key)}
+                onMouseUp={() => compareMode && setFilter('normal')}
+                onClick={() => !compareMode && setFilter(key)}
+              >
+                {ColorBlindnessIcons[key]}
+                <span className="ml-3 text-sm font-medium">
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </span>
+              </button>
+            ))}
+          </div>
+          
+          {image && (
+            <div className="mt-8 space-y-3">
+              <button
+                className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold py-2 px-4 rounded-full shadow-md hover:shadow-lg transition-all duration-300 text-sm"
+                onClick={downloadFilteredImages}
+              >
+                <Download className="inline mr-2" size={16} />
+                Download All Filters
+              </button>
+              <button
+                className={`w-full ${
+                  compareMode 
+                    ? 'bg-gradient-to-r from-red-500 to-pink-500' 
+                    : 'bg-gradient-to-r from-blue-500 to-indigo-500'
+                } text-white font-bold py-2 px-4 rounded-full shadow-md hover:shadow-lg transition-all duration-300 text-sm`}
+                onClick={toggleCompareMode}
+              >
+                <Split className="inline mr-2" size={16} />
+                {compareMode ? 'Exit Compare' : 'Compare Filters'}
+              </button>
+            </div>
+          )}
         </div>
-        {image && (
-          <>
-            <button
-              className="block w-full bg-green-500 text-white p-2 mb-2 rounded"
-              onClick={downloadFilteredImages}
-            >
-              <Download className="inline mr-2" size={16} />
-              Download All Filters
-            </button>
-            <button
-              className={`block w-full ${compareMode ? 'bg-red-500' : 'bg-blue-500'} text-white p-2 mb-2 rounded`}
-              onClick={toggleCompareMode}
-            >
-              <Split className="inline mr-2" size={16} />
-              {compareMode ? 'Exit Compare' : 'Compare Filters'}
-            </button>
-          </>
-        )}
-        <button
-          className="mt-auto bg-yellow-500 text-white p-2 rounded"
-          onClick={toggleDarkMode}
-        >
-          {darkMode ? <Sun className="inline mr-2" size={16} /> : <Moon className="inline mr-2" size={16} />}
-          {darkMode ? 'Light Mode' : 'Dark Mode'}
-        </button>
+        
+        <div className="absolute bottom-4 left-4">
+          <button
+            className={`p-2 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} shadow-md hover:shadow-lg transition-shadow duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+            onClick={toggleDarkMode}
+          >
+            {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-indigo-600" />}
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 p-4">
-        <div
-          className={`border-dashed border-2 rounded-lg p-12 text-center ${darkMode ? 'border-gray-700' : 'border-gray-300'}`}
+      {/* Main Content */}
+      <div className="flex-1 p-8 flex flex-col">
+        <div 
+          className={`flex-1 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-2xl p-8 transition-all duration-300 hover:shadow-3xl flex items-center justify-center`}
           onPaste={handlePaste}
         >
           {image ? (
             <img
               src={image}
               alt="Uploaded design"
-              className="max-w-full max-h-full mx-auto"
+              className="max-w-full max-h-full object-contain"
               style={{ filter: colorBlindnessFilters[filter] }}
             />
           ) : (
-            <div>
-              <Upload className="mx-auto mb-4" size={48} />
-              <p className="mb-2">Upload or paste your screenshot here</p>
+            <div className="text-center">
+              <div className="w-24 h-24 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-lg mx-auto">
+                <Upload className="w-12 h-12 text-white" />
+              </div>
+              <p className="mb-6 text-xl text-gray-600">Upload or paste your image here</p>
+              <label
+                htmlFor="fileInput"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
+              >
+                Select Image
+              </label>
               <input
+                id="fileInput"
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
                 className="hidden"
-                id="fileInput"
               />
-              <label
-                htmlFor="fileInput"
-                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
-              >
-                Select File
-              </label>
             </div>
           )}
         </div>
