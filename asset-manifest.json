@@ -1,19 +1,19 @@
 {
   "files": {
     "main.css": "/ColorblindChecker/static/css/main.7aa09eb2.css",
-    "main.js": "/ColorblindChecker/static/js/main.070d9eb2.js",
+    "main.js": "/ColorblindChecker/static/js/main.424f32b9.js",
     "static/js/239.abc66e7f.chunk.js": "/ColorblindChecker/static/js/239.abc66e7f.chunk.js",
     "static/js/213.128e516f.chunk.js": "/ColorblindChecker/static/js/213.128e516f.chunk.js",
     "static/js/732.d1b862ff.chunk.js": "/ColorblindChecker/static/js/732.d1b862ff.chunk.js",
     "index.html": "/ColorblindChecker/index.html",
     "main.7aa09eb2.css.map": "/ColorblindChecker/static/css/main.7aa09eb2.css.map",
-    "main.070d9eb2.js.map": "/ColorblindChecker/static/js/main.070d9eb2.js.map",
+    "main.424f32b9.js.map": "/ColorblindChecker/static/js/main.424f32b9.js.map",
     "239.abc66e7f.chunk.js.map": "/ColorblindChecker/static/js/239.abc66e7f.chunk.js.map",
     "213.128e516f.chunk.js.map": "/ColorblindChecker/static/js/213.128e516f.chunk.js.map",
     "732.d1b862ff.chunk.js.map": "/ColorblindChecker/static/js/732.d1b862ff.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.7aa09eb2.css",
-    "static/js/main.070d9eb2.js"
+    "static/js/main.424f32b9.js"
   ]
 }
