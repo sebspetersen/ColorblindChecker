@@ -17,15 +17,14 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Create package-lock.json if not exists
+      - name: List directory contents
         run: |
-          if [ ! -f package-lock.json ]; then
-            npm install --package-lock-only
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add package-lock.json
-            git commit -m "Add package-lock.json"
-          fi
+          echo "Root directory:"
+          ls -la
+          echo "Public directory:"
+          ls -la public
+          echo "Src directory:"
+          ls -la src
 
       - name: Install dependencies
         run: npm install
