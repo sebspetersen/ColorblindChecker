@@ -1,232 +1,143 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Download, Split } from 'lucide-react';
+import { Upload, Download, Split, Eye, EyeOff } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-
-const SVGFilters = () => (
-  <svg style={{ position: 'absolute', height: 0 }}>
-    <defs>
-      <filter id="protanopia">
-        <feColorMatrix
-          in="SourceGraphic"
-          type="matrix"
-          values="0.567, 0.433, 0,     0, 0
-                  0.558, 0.442, 0,     0, 0
-                  0,     0.242, 0.758, 0, 0
-                  0,     0,     0,     1, 0"
-        />
-      </filter>
-      <filter id="deuteranopia">
-        <feColorMatrix
-          in="SourceGraphic"
-          type="matrix"
-          values="0.625, 0.375, 0,   0, 0
-                  0.7,   0.3,   0,   0, 0
-                  0,     0.3,   0.7, 0, 0
-                  0,     0,     0,   1, 0"
-        />
-      </filter>
-      <filter id="tritanopia">
-        <feColorMatrix
-          in="SourceGraphic"
-          type="matrix"
-          values="0.95, 0.05,  0,     0, 0
-                  0,    0.433, 0.567, 0, 0
-                  0,    0.475, 0.525, 0, 0
-                  0,    0,     0,     1, 0"
-        />
-      </filter>
-      <filter id="achromatopsia">
-        <feColorMatrix
-          in="SourceGraphic"
-          type="matrix"
-          values="0.299, 0.587, 0.114, 0, 0
-                  0.299, 0.587, 0.114, 0, 0
-                  0.299, 0.587, 0.114, 0, 0
-                  0,     0,     0,     1, 0"
-        />
-      </filter>
-    </defs>
-  </svg>
-);
-
-const colorBlindnessFilters = {
-  normal: 'none',
-  protanopia: 'url(#protanopia)',
-  deuteranopia: 'url(#deuteranopia)',
-  tritanopia: 'url(#tritanopia)',
-  achromatopsia: 'url(#achromatopsia)',
-};
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ColorBlindnessFilterApp = () => {
-  const [image, setImage] = useState(null);
-  const [filter, setFilter] = useState('normal');
-  const [compareMode, setCompareMode] = useState(false);
-  const [compareFilter, setCompareFilter] = useState('normal');
-  const canvasRef = useRef(null);
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (e) => setImage(e.target.result);
-    reader.readAsDataURL(file);
-  };
-
-  const handlePaste = (event) => {
-    const items = event.clipboardData.items;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf('image') !== -1) {
-        const blob = items[i].getAsFile();
-        const reader = new FileReader();
-        reader.onload = (e) => setImage(e.target.result);
-        reader.readAsDataURL(blob);
-      }
-    }
-  };
-
-  const applyFilter = (imageData, filterType) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.src = imageData;
-    return new Promise((resolve) => {
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.filter = colorBlindnessFilters[filterType];
-        ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL());
-      };
-    });
-  };
-
-  const downloadFilteredImages = async () => {
-    if (!image) return;
-
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    const filters = Object.keys(colorBlindnessFilters);
-
-    for (let i = 0; i < filters.length; i++) {
-      if (i > 0) {
-        pdf.addPage();
-      }
-      const filteredImage = await applyFilter(image, filters[i]);
-      
-      const imgWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margin on each side
-      const imgHeight = (imgWidth * 9) / 16; // Assuming 16:9 aspect ratio, adjust if needed
-
-      pdf.setFontSize(16);
-      pdf.text(`${filters[i].charAt(0).toUpperCase() + filters[i].slice(1)} Filter`, 10, 10);
-      pdf.addImage(filteredImage, 'JPEG', 10, 20, imgWidth, imgHeight);
-    }
-
-    pdf.save('color_blindness_filters.pdf');
-  };
-
-  const toggleCompareMode = () => {
-    setCompareMode(!compareMode);
-    setCompareFilter(filter);
-    setFilter('normal');
-  };
+  // ... existing state and functions ...
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-100">
       <SVGFilters />
-
-      <div className="w-64 bg-gray-100 p-4">
-        <h2 className="text-xl font-bold mb-4">Color Blindness Filters</h2>
+      
+      <motion.div 
+        initial={{ x: -300 }}
+        animate={{ x: 0 }}
+        transition={{ type: "spring", stiffness: 100 }}
+        className="w-64 bg-white p-4 shadow-lg"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Color Blindness Filters</h2>
         {Object.keys(colorBlindnessFilters).map((key) => (
-          <button
+          <motion.button
             key={key}
-            className={`block w-full text-left p-2 mb-2 rounded ${
-              (compareMode ? compareFilter : filter) === key ? 'bg-blue-500 text-white' : 'bg-white'
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`block w-full text-left p-3 mb-3 rounded-lg transition-colors duration-200 ${
+              (compareMode ? compareFilter : filter) === key
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
             }`}
             onClick={() => compareMode ? setCompareFilter(key) : setFilter(key)}
           >
             {key.charAt(0).toUpperCase() + key.slice(1)}
-          </button>
+          </motion.button>
         ))}
-        {image && (
-          <>
-            <button
-              className="block w-full bg-green-500 text-white p-2 mb-2 rounded"
-              onClick={downloadFilteredImages}
+        <AnimatePresence>
+          {image && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
             >
-              <Download className="inline mr-2" size={16} />
-              Download All Filters
-            </button>
-            <button
-              className={`block w-full ${compareMode ? 'bg-red-500' : 'bg-blue-500'} text-white p-2 mb-2 rounded`}
-              onClick={toggleCompareMode}
-            >
-              <Split className="inline mr-2" size={16} />
-              {compareMode ? 'Exit Compare' : 'Compare Filters'}
-            </button>
-          </>
-        )}
-      </div>
-
-      <div className="flex-1 p-4">
-        <div
-          className="border-dashed border-2 border-gray-300 rounded-lg p-12 text-center"
-          onPaste={handlePaste}
-        >
-          {image ? (
-            compareMode ? (
-              <div className="flex flex-row space-x-4">
-                <div className="w-1/2">
-                  <h3 className="text-lg font-semibold mb-2">Normal View</h3>
-                  <img
-                    src={image}
-                    alt="Original design"
-                    className="max-w-full h-auto"
-                    style={{ filter: colorBlindnessFilters['normal'] }}
-                  />
-                </div>
-                <div className="w-1/2">
-                  <h3 className="text-lg font-semibold mb-2">{compareFilter.charAt(0).toUpperCase() + compareFilter.slice(1)} Filter</h3>
-                  <img
-                    src={image}
-                    alt="Filtered design"
-                    className="max-w-full h-auto"
-                    style={{ filter: colorBlindnessFilters[compareFilter] }}
-                  />
-                </div>
-              </div>
-            ) : (
-              <img
-                src={image}
-                alt="Uploaded design"
-                className="max-w-full max-h-full mx-auto"
-                style={{ filter: colorBlindnessFilters[filter] }}
-              />
-            )
-          ) : (
-            <div>
-              <Upload className="mx-auto mb-4" size={48} />
-              <p className="mb-2">Upload or paste your screenshot here</p>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="fileInput"
-              />
-              <label
-                htmlFor="fileInput"
-                className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer"
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="block w-full bg-green-500 text-white p-3 mb-3 rounded-lg"
+                onClick={downloadFilteredImages}
               >
-                Select File
-              </label>
-            </div>
+                <Download className="inline mr-2" size={16} />
+                Download All Filters
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`block w-full ${compareMode ? 'bg-red-500' : 'bg-blue-500'} text-white p-3 mb-3 rounded-lg`}
+                onClick={toggleCompareMode}
+              >
+                {compareMode ? <EyeOff className="inline mr-2" size={16} /> : <Eye className="inline mr-2" size={16} />}
+                {compareMode ? 'Exit Compare' : 'Compare Filters'}
+              </motion.button>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
+      </motion.div>
+
+      <div className="flex-1 p-8">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-xl shadow-2xl p-8"
+        >
+          <div
+            className="border-dashed border-2 border-gray-300 rounded-lg p-12 text-center"
+            onPaste={handlePaste}
+          >
+            {image ? (
+              compareMode ? (
+                <div className="flex flex-row space-x-8">
+                  <motion.div className="w-1/2" initial={{ x: -50 }} animate={{ x: 0 }} transition={{ duration: 0.5 }}>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Normal View</h3>
+                    <img
+                      src={image}
+                      alt="Original design"
+                      className="max-w-full h-auto rounded-lg shadow-md"
+                      style={{ filter: colorBlindnessFilters['normal'] }}
+                    />
+                  </motion.div>
+                  <motion.div className="w-1/2" initial={{ x: 50 }} animate={{ x: 0 }} transition={{ duration: 0.5 }}>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800">
+                      {compareFilter.charAt(0).toUpperCase() + compareFilter.slice(1)} Filter
+                    </h3>
+                    <img
+                      src={image}
+                      alt="Filtered design"
+                      className="max-w-full h-auto rounded-lg shadow-md"
+                      style={{ filter: colorBlindnessFilters[compareFilter] }}
+                    />
+                  </motion.div>
+                </div>
+              ) : (
+                <motion.img
+                  key={filter}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  src={image}
+                  alt="Uploaded design"
+                  className="max-w-full max-h-full mx-auto rounded-lg shadow-lg"
+                  style={{ filter: colorBlindnessFilters[filter] }}
+                />
+              )
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Upload className="mx-auto mb-6 text-gray-400" size={64} />
+                <p className="mb-6 text-xl text-gray-600">Upload or paste your screenshot here</p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="fileInput"
+                />
+                <motion.label
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  htmlFor="fileInput"
+                  className="bg-blue-500 text-white px-6 py-3 rounded-lg cursor-pointer text-lg font-semibold shadow-md hover:bg-blue-600 transition-colors duration-200"
+                >
+                  Select File
+                </motion.label>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
       </div>
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
     </div>
   );
 };

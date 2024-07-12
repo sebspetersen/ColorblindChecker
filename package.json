@@ -10,6 +10,7 @@
     "jspdf": "^2.5.1",
     "lucide-react": "^0.263.1",
     "tailwindcss": "^2.2.19"
+    "framer-motion": "^6.3.6"
   },
   "scripts": {
     "start": "react-scripts start",
