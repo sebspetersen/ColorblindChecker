@@ -9,7 +9,7 @@
     "react-scripts": "5.0.1",
     "jspdf": "^2.5.1",
     "lucide-react": "^0.263.1",
-    "tailwindcss": "^2.2.19"
+    "tailwindcss": "^2.2.19",
     "framer-motion": "^6.3.6"
   },
   "scripts": {
