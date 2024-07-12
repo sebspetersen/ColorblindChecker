@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -22,9 +25,9 @@ jobs:
           echo "Root directory:"
           ls -la
           echo "Public directory:"
-          ls -la public
+          ls -la public || echo "Public directory not found"
           echo "Src directory:"
-          ls -la src
+          ls -la src || echo "Src directory not found"
 
       - name: Install dependencies
         run: npm install
@@ -33,7 +36,6 @@ jobs:
         run: npm run build
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          folder: build # The folder the action should deploy.
