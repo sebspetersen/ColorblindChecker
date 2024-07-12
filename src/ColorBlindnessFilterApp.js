@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Split, Sun, Moon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
@@ -65,12 +65,31 @@ const colorBlindnessFilters = {
   achromatopsia: 'url(#achromatopsia)',
 };
 
+const Favicon = ({ darkMode }) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
+      <circle cx="50" cy="50" r="45" fill={darkMode ? "#818CF8" : "#4F46E5"} />
+      <ellipse cx="50" cy="50" rx="20" ry="30" fill={darkMode ? "#1F2937" : "white"} />
+      <circle cx="50" cy="50" r="10" fill={darkMode ? "white" : "#1F2937"} />
+    </svg>
+  );
+};
+
 const ColorBlindnessFilterApp = () => {
   const [image, setImage] = useState(null);
   const [filter, setFilter] = useState('normal');
   const [compareMode, setCompareMode] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const favicon = document.getElementById('favicon');
+    const svg = new Blob([document.querySelector('.favicon-svg').outerHTML], {type: 'image/svg+xml'});
+    const url = URL.createObjectURL(svg);
+    favicon.href = url;
+
+    return () => URL.revokeObjectURL(url);
+  }, [darkMode]);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -146,6 +165,10 @@ const ColorBlindnessFilterApp = () => {
   return (
     <div className={`min-h-screen flex ${darkMode ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 text-gray-800'}`}>
       <SVGFilters />
+      <div className="hidden">
+        <Favicon darkMode={darkMode} className="favicon-svg" />
+      </div>
+      <link id="favicon" rel="icon" type="image/svg+xml" href="" />
 
       {/* Sidebar */}
       <div className={`w-64 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-xl z-10`}>
